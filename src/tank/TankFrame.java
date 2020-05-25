@@ -90,6 +90,11 @@ public class TankFrame extends Frame {
 	
 		//根据按键设置移动方向
 		public void setMainTankDir() {
+			if(!bL && !bR && !bU && !bD)
+				myTank.setMoving(false);
+			else
+				myTank.setMoving(true);
+			
 			if(bL)
 				myTank.setDir(Dir.LEFT);
 			if(bR)
@@ -98,6 +103,7 @@ public class TankFrame extends Frame {
 				myTank.setDir(Dir.UP);
 			if(bD)
 				myTank.setDir(Dir.DOWN);
+			
 		}
 	}
 	
