@@ -1,5 +1,6 @@
 package tank;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 public class Tank {
@@ -25,7 +26,6 @@ public class Tank {
 	public void setDir(Dir dir) {
 		this.dir = dir;
 	}
-
 	
 	public Tank(int x, int y, Dir dir) {
 		super();
@@ -36,7 +36,10 @@ public class Tank {
 
 	//把换坦克的方法定义到Tank类中
 	public void paint(Graphics g) {
+		Color c = g.getColor();
+		g.setColor(Color.YELLOW);
 		g.fillRect(x, y, 50, 50);
+		g.setColor(c);
 		
 		move();
 	}

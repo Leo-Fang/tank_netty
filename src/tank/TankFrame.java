@@ -1,7 +1,9 @@
 package tank;
 
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -9,11 +11,13 @@ import java.awt.event.WindowEvent;
 
 public class TankFrame extends Frame {
 
+	private static final int GAME_WIDTH = 800;
+	private static final int GAME_HEIGHT = 600;
 	Tank myTank = new Tank(200, 200, Dir.DOWN);
 	Bullet b = new Bullet(300, 300, Dir.DOWN);
 	
 	public TankFrame() {
-		setSize(800, 600);
+		setSize(GAME_WIDTH, GAME_HEIGHT);
 		setTitle("Tank War");
 		setResizable(false);
 		setVisible(true);
@@ -30,6 +34,23 @@ public class TankFrame extends Frame {
 		});
 	}
 
+	//解决屏幕闪烁问题
+	Image offScreenImage = null;//在内存中定义一张图片
+
+	@Override
+	public void update(Graphics g) {//这里的g是屏幕的画柄
+		if(offScreenImage == null) {
+			offScreenImage = this.createImage(GAME_WIDTH, GAME_HEIGHT);
+		}
+		Graphics gOffScreen = offScreenImage.getGraphics();
+		Color c = gOffScreen.getColor();
+		gOffScreen.setColor(Color.BLACK);
+		gOffScreen.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+		gOffScreen.setColor(c);
+		paint(gOffScreen);
+		g.drawImage(offScreenImage, 0, 0, null);//把内存中的图片一次性画到屏幕上
+	}
+	
 	@Override
 	public void paint(Graphics g) {
 		myTank.paint(g);
