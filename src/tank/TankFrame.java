@@ -9,9 +9,7 @@ import java.awt.event.WindowEvent;
 
 public class TankFrame extends Frame {
 
-	private static final int SPEED = 10;//坦克速度
-	int x = 200, y = 200;//设置起始位置
-	Dir dir = Dir.DOWN;//设置起始的移动方向
+	Tank myTank = new Tank(200, 200, Dir.DOWN);
 	
 	public TankFrame() {
 		setSize(800, 600);
@@ -33,23 +31,7 @@ public class TankFrame extends Frame {
 
 	@Override
 	public void paint(Graphics g) {
-		g.fillRect(x, y, 50, 50);
-		switch(dir) {
-		case LEFT:
-			x -= SPEED;
-			break;
-		case RIGHT:
-			x += SPEED;
-			break;
-		case UP:
-			y -= SPEED;
-			break;
-		case DOWN:
-			y += SPEED;
-			break;
-		default:
-			break;
-		}
+		myTank.paint(g);		
 	}
 	
 	class MyKeyListener extends KeyAdapter {
@@ -109,13 +91,13 @@ public class TankFrame extends Frame {
 		//根据按键设置移动方向
 		public void setMainTankDir() {
 			if(bL)
-				dir = Dir.LEFT;
+				myTank.setDir(Dir.LEFT);
 			if(bR)
-				dir = Dir.RIGHT;
+				myTank.setDir(Dir.RIGHT);
 			if(bU)
-				dir = Dir.UP;
+				myTank.setDir(Dir.UP);
 			if(bD)
-				dir = Dir.DOWN;
+				myTank.setDir(Dir.DOWN);
 		}
 	}
 	
