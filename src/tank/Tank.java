@@ -9,13 +9,30 @@ public class Tank {
 	private Dir dir = Dir.DOWN;
 	private static final int SPEED = 10;
 	
-	private static final int WIDTH = ResourceMgr.tankD.getWidth();
-	private static final int HEIGHT = ResourceMgr.tankD.getHeight();
+	public static final int WIDTH = ResourceMgr.tankD.getWidth();
+	public static final int HEIGHT = ResourceMgr.tankD.getHeight();
 	
 	private boolean moving = false;//Tank移动或停止的判断标志
+	private boolean living = true;//Tanks寿命的判断标志
 	
 	private TankFrame tf = null;
 	
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
 	public boolean isMoving() {
 		return moving;
 	}
@@ -42,6 +59,10 @@ public class Tank {
 
 	//把换坦克的方法定义到Tank类中
 	public void paint(Graphics g) {
+		if(!living)
+//			return;
+			tf.tanks.remove(this);//Tank死后需要从List中移除
+		
 		switch(dir){
 		case LEFT:
 			g.drawImage(ResourceMgr.tankL, x, y, null);
@@ -86,6 +107,10 @@ public class Tank {
 		int bX = this.x + Tank.WIDTH/2 -Bullet.WIDTH/2;
 		int bY = this.y + Tank.HEIGHT/2 - Bullet.HEIGHT/2;
 		tf.bullets.add(new Bullet(bX, bY, this.dir, this.tf));
+	}
+
+	public void die() {
+		this.living = false;
 	}
 	
 }
