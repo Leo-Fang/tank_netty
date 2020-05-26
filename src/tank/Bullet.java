@@ -5,7 +5,7 @@ import java.awt.Rectangle;
 
 public class Bullet {
 
-	private static final int SPEED = 15;
+	private static final int SPEED = Integer.parseInt((String)PropertyMgr.get("bulletSpeed"));
 	private int x, y;
 	private Dir dir;
 	public static int WIDTH = ResourceMgr.bulletD.getWidth();

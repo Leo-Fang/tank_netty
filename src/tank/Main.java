@@ -6,9 +6,11 @@ public class Main {
 		
 		TankFrame tf = new TankFrame();
 		
+		int initTankCount = Integer.parseInt((String) PropertyMgr.get("initTankCount"));
+		
 		//初始化地方坦克
-		for (int i = 0; i < 5; i++) {
-			tf.tanks.add(new Tank(50+i*150, 200, Dir.DOWN, Group.BAD, tf));
+		for (int i = 0; i < initTankCount; i++) {
+			tf.tanks.add(new Tank(10+i*80, 200, Dir.DOWN, Group.BAD, tf));
 		}
 //		new Thread(()->new Audio("audio/war1.wav").loop()).start();
 		
