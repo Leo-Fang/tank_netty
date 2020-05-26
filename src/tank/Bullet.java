@@ -1,6 +1,5 @@
 package tank;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
@@ -9,8 +8,8 @@ public class Bullet {
 	private static final int SPEED = 15;
 	private  int x, y;
 	private Dir dir;
-	public static final int WIDTH = ResourceMgr.bulletD.getWidth();
-	public static final int HEIGHT = ResourceMgr.bulletD.getHeight();
+	public static int WIDTH = ResourceMgr.bulletD.getWidth();
+	public static int HEIGHT = ResourceMgr.bulletD.getHeight();
 	
 	private boolean living = true;//定义子弹寿命
 	TankFrame tf = null;
@@ -80,7 +79,7 @@ public class Bullet {
 			return;
 		
 		//TODO:这种方法每循环一次都要new一个Rectangle占内存。可以用一个rect来记录子弹的位置
-		Rectangle rectB = new Rectangle(this.x, this.y, this.WIDTH, this.HEIGHT);
+		Rectangle rectB = new Rectangle(this.x, this.y, WIDTH, HEIGHT);
 		Rectangle rectT = new Rectangle(tank.getX(), tank.getY(), Tank.WIDTH, Tank.HEIGHT);
 		if(rectB.intersects(rectT)){
 			tank.die();
