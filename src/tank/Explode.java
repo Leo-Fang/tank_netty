@@ -9,7 +9,7 @@ public class Explode {
 	public static int WIDTH = ResourceMgr.explodes[0].getWidth();
 	public static int HEIGHT = ResourceMgr.explodes[0].getHeight();
 	
-	private boolean living = true;//¶¨Òå×Óµ¯ÊÙÃü
+	private boolean living = true;
 	TankFrame tf = null;
 	
 	private int step = 0;
@@ -18,6 +18,7 @@ public class Explode {
 		this.x = x;
 		this.y = y;
 		this.tf = tf;
+		
 	}
 
 	public void paint(Graphics g) {
