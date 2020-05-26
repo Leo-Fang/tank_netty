@@ -6,10 +6,12 @@ import java.awt.Rectangle;
 public class Bullet {
 
 	private static final int SPEED = 15;
-	private  int x, y;
+	private int x, y;
 	private Dir dir;
 	public static int WIDTH = ResourceMgr.bulletD.getWidth();
 	public static int HEIGHT = ResourceMgr.bulletD.getHeight();
+	
+	Rectangle rect = new Rectangle();
 	
 	private boolean living = true;//定义子弹寿命
 	TankFrame tf = null;
@@ -21,6 +23,11 @@ public class Bullet {
 		this.dir = dir;
 		this.group = group;
 		this.tf = tf;
+		
+		rect.x = this.x;
+		rect.y = this.y;
+		rect.width = WIDTH;
+		rect.height = HEIGHT;
 	}
 	
 	public Group getGroup() {
@@ -70,6 +77,10 @@ public class Bullet {
 		default:
 			break;
 		}
+		//update rect
+		rect.x = this.x;
+		rect.y = this.y;
+		
 		if(x<0 || y<0 || x>TankFrame.GAME_WIDTH || y>TankFrame.GAME_HEIGHT)
 			living = false;
 	}
@@ -77,11 +88,8 @@ public class Bullet {
 	public void collideWith(Tank tank) {
 		if(this.group == tank.getGroup())
 			return;
-		
-		//TODO:这种方法每循环一次都要new一个Rectangle占内存。可以用一个rect来记录子弹的位置
-		Rectangle rectB = new Rectangle(this.x, this.y, WIDTH, HEIGHT);
-		Rectangle rectT = new Rectangle(tank.getX(), tank.getY(), Tank.WIDTH, Tank.HEIGHT);
-		if(rectB.intersects(rectT)){
+
+		if(rect.intersects(tank.rect)){
 			tank.die();
 			this.die();
 			int eX = tank.getX() + Tank.WIDTH/2 -Explode.WIDTH/2;

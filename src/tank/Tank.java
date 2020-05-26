@@ -1,6 +1,7 @@
 package tank;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.Random;
 
 public class Tank {
@@ -18,6 +19,7 @@ public class Tank {
 	private Group group = Group.BAD;
 	
 	private TankFrame tf = null;
+	Rectangle rect = new Rectangle();
 	
 	private Random random = new Random();
 	
@@ -68,6 +70,11 @@ public class Tank {
 		this.dir = dir;
 		this.group = group;
 		this.tf = tf;
+		
+		rect.x = this.x;
+		rect.y = this.y;
+		rect.width = WIDTH;
+		rect.height = HEIGHT;
 	}
 
 	//把换坦克的方法定义到Tank类中
@@ -113,13 +120,17 @@ public class Tank {
 			break;
 		default:
 			break;
-		}
+		}		
+		
 		if(this.group == Group.BAD && random.nextInt(100) > 95)
 			this.fire();
 		if(this.group == Group.BAD && random.nextInt(100) > 95)
 			randomDir();
 		
 		boundsCheck();
+		
+		rect.x = this.x;
+		rect.y = this.y;
 	}
 
 	private void randomDir() {
