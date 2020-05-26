@@ -11,6 +11,8 @@ public class Tank {
 	
 	private boolean moving = false;//Tank移动或停止的判断标志
 	
+	private TankFrame tf = null;
+	
 	public boolean isMoving() {
 		return moving;
 	}
@@ -27,11 +29,12 @@ public class Tank {
 		this.dir = dir;
 	}
 	
-	public Tank(int x, int y, Dir dir) {
+	public Tank(int x, int y, Dir dir, TankFrame tf) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
+		this.tf = tf;
 	}
 
 	//把换坦克的方法定义到Tank类中
@@ -64,6 +67,10 @@ public class Tank {
 		default:
 			break;
 		}
+	}
+
+	public void fire() {
+		tf.b = new Bullet(this.x, this.y, this.dir);
 	}
 	
 }
