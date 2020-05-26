@@ -1,22 +1,34 @@
 package tank;
 
-import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Random;
 
 public class Tank {
 
 	private int x, y;
 	private Dir dir = Dir.DOWN;
-	private static final int SPEED = 10;
+	private static final int SPEED = 3;
 	
 	public static final int WIDTH = ResourceMgr.tankD.getWidth();
 	public static final int HEIGHT = ResourceMgr.tankD.getHeight();
 	
-	private boolean moving = false;//Tank移动或停止的判断标志
+	private boolean moving = true;//Tank移动或停止的判断标志
 	private boolean living = true;//Tanks寿命的判断标志
+	
+	private Group group = Group.BAD;
 	
 	private TankFrame tf = null;
 	
+	private Random random = new Random();
+	
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
+	}
+
 	public int getX() {
 		return x;
 	}
@@ -49,11 +61,12 @@ public class Tank {
 		this.dir = dir;
 	}
 	
-	public Tank(int x, int y, Dir dir, TankFrame tf) {
+	public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
+		this.group = group;
 		this.tf = tf;
 	}
 
@@ -101,12 +114,14 @@ public class Tank {
 		default:
 			break;
 		}
+		if(random.nextInt(10) > 8)
+			this.fire();
 	}
 
 	public void fire() {
 		int bX = this.x + Tank.WIDTH/2 -Bullet.WIDTH/2;
 		int bY = this.y + Tank.HEIGHT/2 - Bullet.HEIGHT/2;
-		tf.bullets.add(new Bullet(bX, bY, this.dir, this.tf));
+		tf.bullets.add(new Bullet(bX, bY, this.dir, this.group, this.tf));
 	}
 
 	public void die() {

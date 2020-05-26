@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 
 public class Bullet {
 
-	private static final int SPEED = 10;
+	private static final int SPEED = 15;
 	private  int x, y;
 	private Dir dir;
 	public static final int WIDTH = ResourceMgr.bulletD.getWidth();
@@ -14,14 +14,24 @@ public class Bullet {
 	
 	private boolean living = true;//定义子弹寿命
 	TankFrame tf = null;
+	private Group group = Group.BAD;
 	
-	public Bullet(int x, int y, Dir dir, TankFrame tf) {
+	public Bullet(int x, int y, Dir dir, Group group, TankFrame tf) {
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
+		this.group = group;
 		this.tf = tf;
 	}
 	
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
+	}
+
 	public void paint(Graphics g) {
 		if(!living)
 			tf.bullets.remove(this);
@@ -66,6 +76,10 @@ public class Bullet {
 	}
 
 	public void collideWith(Tank tank) {
+		if(this.group == tank.getGroup())
+			return;
+		
+		//TODO:这种方法每循环一次都要new一个Rectangle占内存。可以用一个rect来记录子弹的位置
 		Rectangle rectB = new Rectangle(this.x, this.y, this.WIDTH, this.HEIGHT);
 		Rectangle rectT = new Rectangle(tank.getX(), tank.getY(), Tank.WIDTH, Tank.HEIGHT);
 		if(rectB.intersects(rectT)){
