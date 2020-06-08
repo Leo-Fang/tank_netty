@@ -2,6 +2,10 @@ package tank;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.UUID;
+
+import tank.net.Client;
+import tank.net.TankDieMsg;
 
 public class Bullet {
 
@@ -17,7 +21,11 @@ public class Bullet {
 	TankFrame tf = null;
 	private Group group = Group.BAD;
 	
-	public Bullet(int x, int y, Dir dir, Group group, TankFrame tf) {
+	private UUID id = UUID.randomUUID(); 
+	private UUID playerId;
+	
+	public Bullet(UUID playerId, int x, int y, Dir dir, Group group, TankFrame tf) {
+		this.setPlayerId(playerId);
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
@@ -30,6 +38,38 @@ public class Bullet {
 		rect.height = HEIGHT;
 	}
 	
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public Dir getDir() {
+		return dir;
+	}
+
+	public void setDir(Dir dir) {
+		this.dir = dir;
+	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
 	public Group getGroup() {
 		return group;
 	}
@@ -89,17 +129,23 @@ public class Bullet {
 		if(this.group == tank.getGroup())
 			return;
 
-		if(rect.intersects(tank.rect)){
+		if(this.living && tank.isLiving() && this.rect.intersects(tank.rect)){
 			tank.die();
 			this.die();
-			int eX = tank.getX() + Tank.WIDTH/2 -Explode.WIDTH/2;
-			int eY = tank.getY() + Tank.HEIGHT/2 - Explode.HEIGHT/2;
-			tf.explodes.add(new Explode(eX, eY, tf));
+			Client.INSTANCE.send(new TankDieMsg(this.id, tank.getId()));
 		}
 	}
 
-	private void die() {
+	public void die() {
 		this.living = false;
+	}
+
+	public UUID getPlayerId() {
+		return playerId;
+	}
+
+	public void setPlayerId(UUID playerId) {
+		this.playerId = playerId;
 	}
 	
 }

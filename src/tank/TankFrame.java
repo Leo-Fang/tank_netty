@@ -9,23 +9,57 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
+import tank.net.Client;
+import tank.net.TankDirChangedMsg;
+import tank.net.TankStartMovingMsg;
+import tank.net.TankStopMsg;
 
 public class TankFrame extends Frame {
 
-	public static final int GAME_WIDTH = Integer.parseInt((String)PropertyMgr.get("gameWidth"));
-	public static final int GAME_HEIGHT = Integer.parseInt((String)PropertyMgr.get("gameHeight"));
+	public static final TankFrame INSTANCE = new TankFrame();
 	
-	Tank myTank = new Tank(200, 400, Dir.DOWN, Group.GOOD, this);
+	Random r = new Random();
+	
+	public static final int GAME_WIDTH = 800;
+	public static final int GAME_HEIGHT = 600;
+	
+	Tank myTank = new Tank(r.nextInt(GAME_WIDTH), r.nextInt(GAME_HEIGHT), Dir.DOWN, Group.GOOD, this);
 	List<Bullet> bullets = new ArrayList<>();
-	List<Tank> tanks = new ArrayList<>();
+	Map<UUID, Tank> tanks = new HashMap<>();
 	List<Explode> explodes = new ArrayList<>();
+	
+	public void addTank(Tank t) {
+		tanks.put(t.getId(), t);
+	}
+	
+	public void addBullet(Bullet b) {
+		bullets.add(b);
+	}
+	
+	public Tank findTankByUUID(UUID id) {
+		return tanks.get(id);
+	}
+	
+	public Bullet findBulletByUUID(UUID id) {
+		for (int i = 0; i < bullets.size(); i++) {
+			if(bullets.get(i).getId().equals(id))
+				return bullets.get(i);
+		}
+		return null;
+	}
 	
 	public TankFrame() {
 		setSize(GAME_WIDTH, GAME_HEIGHT);
 		setTitle("Tank War");
 		setResizable(false);
-		setVisible(true);
+//		setVisible(true);
 		
 		//添加键盘监听事件
 		this.addKeyListener(new MyKeyListener());
@@ -60,9 +94,9 @@ public class TankFrame extends Frame {
 	public void paint(Graphics g) {
 		Color c = g.getColor();
 		g.setColor(Color.WHITE);
-		g.drawString("子弹的数量"+bullets.size(), 10, 60);
-		g.drawString("敌人的数量"+tanks.size(), 10, 80);
-		g.drawString("爆炸的数量"+explodes.size(), 10, 100);
+		g.drawString("bullets:"+bullets.size(), 10, 60);
+		g.drawString("tanks:"+tanks.size(), 10, 80);
+		g.drawString("explodes:"+explodes.size(), 10, 100);
 		g.setColor(c);
 		
 		myTank.paint(g);
@@ -70,19 +104,19 @@ public class TankFrame extends Frame {
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets.get(i).paint(g);
 		}
-		//画坦克
-		for (int i = 0; i < tanks.size(); i++) {
-			tanks.get(i).paint(g);
-		}
-		//碰撞检测
-		for (int i = 0; i < bullets.size(); i++) {
-			for (int j = 0; j < tanks.size(); j++) {
-				bullets.get(i).collideWith(tanks.get(j));
-			}
-		}
+
+		tanks.values().stream().forEach((e)->e.paint(g));
+		
 		//画爆炸
 		for (int i = 0; i < explodes.size(); i++) {
 			explodes.get(i).paint(g);
+		}
+		//碰撞检测
+		Collection<Tank> values = tanks.values();
+		for (int i = 0; i < bullets.size(); i++) {
+			for (Tank t : values) {
+				bullets.get(i).collideWith(t);
+			}
 		}
 	}
 	
@@ -115,6 +149,8 @@ public class TankFrame extends Frame {
 				break;
 			}			
 			setMainTankDir();
+			
+//			new Thread(()->new Audio("audio/tank_move.wav").play()).start();
 		}
 
 
@@ -147,21 +183,34 @@ public class TankFrame extends Frame {
 	
 		//根据按键设置移动方向
 		public void setMainTankDir() {
-			if(!bL && !bR && !bU && !bD)
+			Dir dir = myTank.getDir();
+			
+			if(!bL && !bR && !bU && !bD) {
 				myTank.setMoving(false);
-			else
+				Client.INSTANCE.send(new TankStopMsg(getMainTank()));
+			} else {
+				if(bL)
+					myTank.setDir(Dir.LEFT);
+				if(bR)
+					myTank.setDir(Dir.RIGHT);
+				if(bU)
+					myTank.setDir(Dir.UP);
+				if(bD)
+					myTank.setDir(Dir.DOWN);
+				
+				if(!myTank.isMoving())
+					Client.INSTANCE.send(new TankStartMovingMsg(getMainTank()));
 				myTank.setMoving(true);
-			
-			if(bL)
-				myTank.setDir(Dir.LEFT);
-			if(bR)
-				myTank.setDir(Dir.RIGHT);
-			if(bU)
-				myTank.setDir(Dir.UP);
-			if(bD)
-				myTank.setDir(Dir.DOWN);
-			
+				
+				if(dir != myTank.getDir())
+					Client.INSTANCE.send(new TankDirChangedMsg(myTank));
+			}		
 		}
+
+	}
+
+	public Tank getMainTank() {		
+		return this.myTank;
 	}
 	
 }
